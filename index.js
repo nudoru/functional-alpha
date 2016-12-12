@@ -1,18 +1,25 @@
-//
+let util = require('util'),
+    futurizeP = require('futurize').futurizeP,
+    Future = require('ramda-fantasy').Future;
 
-
-const getPromise = () => {
-(new Promise((resolve, reject) => {
-  let test = false;
+// A test promise, if test
+const getPromise = (test) => {
+ return new Promise((resolve, reject) => {
   if(test) {
     resolve({foo:'bar'});
   } else {
     reject('Some error');
   }
-};)
-  )
-}
+})
+};
 
-// 1 - wrap promise in a https://github.com/futurize/futurize
-// Get future w/ a maybe or either
-// handle left and right
+const doSuccessPromise = () => getPromise(true);
+const doFailPromise = () => getPromise(false);
+
+// Regular Promise
+doSuccessPromise().then(d => console.log('Got ',d)).catch(e => console.warn('Err ',e));
+
+// Futurized
+const future = futurizeP(Future);
+const futureizedPromise = future(doSuccessPromise)
+futureizedPromise().fork(e => console.warn(e), d => console.log('Got ', d));
