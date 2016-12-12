@@ -1,6 +1,8 @@
 let util = require('util'),
+    futurize = require('futurize').futurize,
     futurizeP = require('futurize').futurizeP,
-    Future = require('ramda-fantasy').Future;
+    Future = require('ramda-fantasy').Future,
+    Task = require('data.task');
 
 // A test promise, if test
 const getPromise = (test) => {
@@ -23,3 +25,12 @@ doSuccessPromise().then(d => console.log('Got ',d)).catch(e => console.warn('Err
 const future = futurizeP(Future);
 const futureizedPromise = future(doSuccessPromise)
 futureizedPromise().fork(e => console.warn(e), d => console.log('Got ', d));
+
+// First class map
+
+const joeize = (name) => [name,'Joe'].join('-');
+
+let names = ['Bob','Sarah','Todd'],
+    southerize = names.map(joeize);
+
+console.log(southerize);
