@@ -8,13 +8,13 @@ let util = require('util'),
 // A test promise, if test
 
 const getPromise = (test) => {
- return new Promise((resolve, reject) => {
-  if(test) {
-    resolve({foo:'bar'});
-  } else {
-    reject('Some error');
-  }
-})
+  return new Promise((resolve, reject) => {
+    if(test) {
+      resolve({foo:'bar'});
+    } else {
+      reject('Some error');
+    }
+  })
 };
 
 const doSuccessPromise = () => getPromise(true);
@@ -26,7 +26,7 @@ doSuccessPromise().then(d => console.log('Got ',d)).catch(e => console.warn('Err
 // Futurized
 const future = futurizeP(Future);
 const futureizedPromise = future(doSuccessPromise)
-futureizedPromise().fork(e => console.warn(e), d => console.log('Got ', d));
+futureizedPromise().fork(e => console.warn(e), d => console.log('Future, got ', d));
 
 //------------------------------------------------------------------------------
 // First class map
@@ -40,8 +40,17 @@ console.log(southerize);
 
 //------------------------------------------------------------------------------
 // Transduce
+
 const concat = (acc, x) => acc.concat(x); // Wrap Array.concat
 const mapper = (f, cnct) => (acc, x) => cnct(acc, f(x));
 const filterer = (f, cnct) => (acc, x) => f(x) ? cnct(acc, x) : acc;
 const transRes = [1,2,3].reduce(filterer(x => x > 1, mapper(x => x + 1, concat)), []);
 console.log(transRes);
+
+//------------------------------------------------------------------------------
+// Task
+
+const testTask = new Task((reg, res) => res(['One', 'Two', 'Three']));
+const theTasks = testTask.map(items => items); // Some op on the array
+theTasks.fork(e => console.error(e),
+              d => console.log('Tasks ', d))
